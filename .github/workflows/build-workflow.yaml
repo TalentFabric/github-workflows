@@ -120,7 +120,7 @@ jobs:
               config_path="dev/ovveride.yaml"
               environment="dev"
               if ${override_yaml_config}; then
-                config_path=${REPO_NAME}
+                config_path="${REPO_NAME}.yaml"
                 environment="management"
               fi
               export TAG_FILE=$(find ./resources/services -type d -name "${REPO_NAME}" )/${config_path}
