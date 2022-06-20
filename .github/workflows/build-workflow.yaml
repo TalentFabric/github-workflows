@@ -123,9 +123,8 @@ jobs:
                 sed -i "s/${TAG_FIND}/${TAG}/" $TAG_FILE
                 git config user.name "GitHub Actions Bot"
                 git config user.email "<>"
-                git add $TAG_FILE || true
-                git commit -m "bot ${REPO_NAME} ${TAG}" || true
-                git push origin master || true
+                git commit -am "bot ${REPO_NAME}/${override_yaml_path} ${TAG}"
+                git push origin master
               else
                 echo "could not deploy" && exit 1
               fi
