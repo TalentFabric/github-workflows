@@ -9,10 +9,10 @@ on:
         required: false
         type: boolean
         default: false
-      override_yaml_config:
+      override_yaml_path:
         required: false
-        type: boolean
-        default: false
+        type: string
+        default: "dev/ovveride"
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -103,7 +103,7 @@ jobs:
           echo "git_repo_name=${REPO_NAME}" | tee -a $GITHUB_ENV
           echo "git_version=${git_version}" | tee -a $GITHUB_ENV
           echo "deploy=${{inputs.deploy}}" | tee -a $GITHUB_ENV
-          echo "override_yaml_config=${{inputs.override_yaml_config}}" | tee -a $GITHUB_ENV
+          echo "override_yaml_path=${{inputs.override_yaml_path}}.yaml" | tee -a $GITHUB_ENV
 
       - name: Checkout deployments-scripts repo
         uses: actions/checkout@v2
@@ -117,20 +117,14 @@ jobs:
           TAG: ${{env.git_version}}
           REPO_NAME: ${{env.git_repo_name}}
         run: |
-              config_path="dev/ovveride.yaml"
-              environment="dev"
-              if ${override_yaml_config}; then
-                config_path="${REPO_NAME}.yaml"
-                environment="management"
-              fi
-              export TAG_FILE=$(find ./resources/services -type d -name "${REPO_NAME}" )/${config_path}
+              export TAG_FILE=$(find ./resources/services -type d -name "${REPO_NAME}" )/${override_yaml_path}
               export TAG_FIND=$(grep tag $TAG_FILE | cut -d: -f2 | tr -d " ")
               if [[ ! -z "${TAG_FIND}" ]]; then 
                 sed -i "s/${TAG_FIND}/${TAG}/" $TAG_FILE
                 git config user.name "GitHub Actions Bot"
                 git config user.email "<>"
                 git add $TAG_FILE || true
-                git commit -m "bot ${REPO_NAME} ${TAG} deploy ${environment}" || true
+                git commit -m "bot ${REPO_NAME} ${TAG}" || true
                 git push origin master || true
               else
                 echo "could not deploy" && exit 1
