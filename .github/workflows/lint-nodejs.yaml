@@ -34,7 +34,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Install Node.js dependencies
+      - name: Install and lint
         continue-on-error: true
         run: | 
           aws codeartifact login --tool npm --repository perfectmatch-core --domain talent-fabric
